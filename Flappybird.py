@@ -7,28 +7,31 @@ from Bird import *
 import numpy as np
 import os
 from Slider import *
-GRAVITY=2
-SCREENWIDTH, SCREENHEIGHT = 400,600
-PIPE_VELOCITY,PIPE_HEIGHT,PIPE_WIDTH,PIPE_GAP = 1.5,200,30,150
-PIPE_RANGE = 200
-PIPES_DIST=200
-BIRD_RADIUS,BIRD_TERMINAL_VELOCITY,BIRD_JUMP=10,7,5
-BIRD_POSX=int(SCREENWIDTH/4)
-BIRD_SIZE_BUFFER = 2
-SLIDER_BUFFER = 60
-TOTAL_BIRDS = 50
+GRAVITY=2    # gravity for the birds
+SCREENWIDTH, SCREENHEIGHT = 400,600 #dimensions of the window
+PIPE_VELOCITY = 1.5 # Velocity of the pipe
+PIPE_WIDTH = 30 #Width of the pipe
+PIPE_GAP = 120 # Gap between the heights of the pipe
+PIPE_RANGE = 200 # Range of the center of the gap of pipes from center
+PIPES_DIST= 160 # Distance of two adjacent pipes
+BIRD_RADIUS = 10 # Radius of the bird as a circle
+BIRD_TERMINAL_VELOCITY = 7 # Max velocity of the bird
+BIRD_JUMP = 5 # Acceleration of the jumping of the bird
+BIRD_POSX = int(SCREENWIDTH/4) # Initial position of the bird
+BIRD_SIZE_BUFFER = 2 # To compensate for proper collision detection
+SLIDER_BUFFER = 60 # The distance of slider's center from the right hand side of the screen
+TOTAL_BIRDS = 50 # Amount of birds in 1 generation
+FPS=30 #Initial FPS
+GEN=0 # To store the gen number
 pygame.init()
-FPS=30
-GEN=0
 pygame.font.init()
-HIDDEN_LAYERS=20
-myfont = pygame.font.SysFont('Comic Sans MS', 15)
+myfont = pygame.font.SysFont('Comic Sans MS', 15) # For the Score display
 clock=pygame.time.Clock()
 SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 pygame.display.set_caption('Flappy Bird')
-SCREEN.fill((135,206,235))
-slider = Slider(SCREEN , 30 , 500 , (SCREENWIDTH - SLIDER_BUFFER , 30) , 60)
-def closestPipe(pipes):
+SCREEN.fill((135,206,235)) #color of the background
+slider = Slider(SCREEN , 30 , 500 , (SCREENWIDTH - SLIDER_BUFFER , 30) , 60) #Slider
+def closestPipe(pipes): # calculation of the next pipe to the bird
     min_dist=SCREENWIDTH
     nearest_pipe=None
     for pipe in pipes:
@@ -36,7 +39,7 @@ def closestPipe(pipes):
             min_dist=pipe.posx+PIPE_WIDTH/2-BIRD_POSX
             nearest_pipe=pipe
     return nearest_pipe
-def eval_genomes(genomes, config):
+def eval_genomes(genomes, config): # part of NEAT implementation
     run=True
     pipes=[]
     birds=[]
@@ -57,27 +60,19 @@ def eval_genomes(genomes, config):
         g.fitness = 0
         ge.append(g)
     MAX_SCORE=0
-    # Generations=1
     ACTUAL_MAX=0
-    while run and len(birds) > 0 :
+    while run and len(birds) > 0 : # while there are birds alive
         FPS = slider.get_value()
-
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 run=False
-
-
         if Last_pipe == None or Last_pipe.posx < SCREENWIDTH - PIPES_DIST:
-            rand_pipe=int(rand.randrange(-1*PIPE_RANGE/2,PIPE_RANGE/2,1))+SCREENHEIGHT/2
+            rand_pipe=int(rand.randrange(-1*PIPE_RANGE/2,PIPE_RANGE/2,1))+SCREENHEIGHT/2 # Making pipes
             Last_pipe= Pipe(PIPE_WIDTH,SCREEN,(SCREENWIDTH-PIPE_WIDTH/2,rand_pipe),PIPE_VELOCITY,PIPE_GAP)
             pipes.append(Last_pipe)
-
             nextPipe=closestPipe(pipes)
-
         SCREEN.fill((135,206,235))
-        # pipe2.draw()
-        # pipe2.update()
         for pipe in pipes:
             pipe.draw()
             pipe.update()
@@ -95,10 +90,8 @@ def eval_genomes(genomes, config):
                 (nextPipe.posy+(PIPE_GAP/2)))
             ge[x].fitness += 0.1
             prediction= nets[x].activate(xs)
-            # print(prediction)
-            # print(prediction[0] > prediction[1])
             if  prediction[0] > 0.5:
-                bird.jump()
+                bird.jump() # movement of the bird
             bird.update(pipes)
             if (bird.ScoreCheck):
                 ge[x].fitness +=5
@@ -108,22 +101,19 @@ def eval_genomes(genomes, config):
                 birds.remove(bird)
                 nets.pop(x)
                 ge.pop(x)
-        textsurface = myfont.render("Score:"+str(int(ACTUAL_MAX)), False, (0, 0, 0))
+        textsurface = myfont.render("Score: "+str(int(ACTUAL_MAX)), False, (0, 0, 0))
         SCREEN.blit(textsurface,(20,30))
         slider.draw()
         FPS = slider.get_value()
         print(clock.get_fps(),FPS)
-        # pygame.draw.line(SCREEN,(0,0,0),(150,300),(250,300),10)
-        pygame.display.flip()
+        pygame.display.flip() # reseting the screen
     clock.tick(FPS)
-    # pygame.draw.line(SCREEN,(0,0,0),(150,300),(250,300),10)
-    # pygame.quit()
-def reset(TOTAL_BIRDS):
+def reset(TOTAL_BIRDS):   # To reset the game at each gen
     pipes=[]
     SCREEN.fill((135,206,235))
     Last_pipe = None
     return pipes
-def run(config_file):
+def run(config_file): # Loading the architecture of the network
     config=neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
                                 neat.DefaultSpeciesSet, neat.DefaultStagnation,
                                 config_file)
