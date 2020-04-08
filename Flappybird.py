@@ -112,6 +112,7 @@ def eval_genomes(genomes, config):
         SCREEN.blit(textsurface,(20,30))
         slider.draw()
         FPS = slider.get_value()
+        print(clock.get_fps(),FPS)
         # pygame.draw.line(SCREEN,(0,0,0),(150,300),(250,300),10)
         pygame.display.flip()
     clock.tick(FPS)

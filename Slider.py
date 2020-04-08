@@ -8,8 +8,8 @@ class Slider:
         self.posx,self.posy = pos
         self.width = width
         self.slider = self.posx - width/2
-        self.value = (min_value + max_value)/2
-        self.scale = width/(max_value - min_value)
+        self.value = min_value
+        self.scale = (max_value - min_value)/width
 
     def draw(self):
         pygame.draw.line(self.surface,(0,0,0),
@@ -29,6 +29,6 @@ class Slider:
                 self.slider = self.posx + self.width/2
             elif self.slider < self.posx - self.width/2:
                 self.slider = self.posx - self.width/2
-            self.value = (self.slider - self.width/2) * self.scale + self.min_value
+            self.value = (self.slider -self.posx + self.width/2) * self.scale + self.min_value
     def get_value(self):
         return self.value
