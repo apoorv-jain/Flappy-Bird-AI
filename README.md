@@ -26,8 +26,8 @@ To Play or use it the game use the following steps :-
         -- pip install -r requirements.txt
 ```
 
-3. And if you want to play the game use the **Flappy-Bird-Game** directory and run 
+3. And if you want to play the game use the **Final_flappy_bird** directory and run 
 ```
         -- python FlappyBird.py
 ```
-else if you want to run The AI use the  directory **Flappy-Bird-AI** and run the same command in command prompt.
+else if you want to run The AI use the home directory of the repo **Flappy-Bird-AI** and run the same command in command prompt.
