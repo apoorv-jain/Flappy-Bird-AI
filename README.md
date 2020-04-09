@@ -30,4 +30,5 @@ To Play or use it the game use the following steps :-
 ```
         -- python FlappyBird.py
 ```
-else if you want to run The AI use the home directory of the repo **Flappy-Bird-AI** and run the same command in command prompt.
+else if you want to run The AI use the home directory of the repo **The-AI** and run the same command in command prompt.
+And Yes to speed up the training process I have added a slider using pygame on the top-right corner of the screen.
